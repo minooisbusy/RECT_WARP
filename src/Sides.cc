@@ -2,8 +2,19 @@
 //#include<opencv2/opencv.hpp>
 //#include<iostream>
 
-namespace RECTWARP
+namespace RECT_WARP
 {
+void CallBackProc(int event, int x, int y, int flags, void *point)
+{
+    CBPoints *p = (CBPoints*)point;
+    
+    if(event == cv::EVENT_LBUTTONDOWN&&p->n_limit_iter<p->n_max_points)
+    {
+        p->vP[p->n_limit_iter].x = x;
+        p->vP[p->n_limit_iter].y = y;
+        p->n_limit_iter++;
+    }
+}
 std::vector<cv::Point> SideSort(std::vector<cv::Point> vP)
 {
     bool sign_y[MAX_POINTS] = {false};

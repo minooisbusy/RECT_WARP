@@ -8,9 +8,11 @@
 #include<iostream>
 #include<algorithm>
 
-namespace RECTWARP
+namespace RECT_WARP
 {
 #define MAX_POINTS 4
+void CallBackProc(int event, int x, int y, int flags, void * point);
+std::vector<cv::Point> CollectPoints(cv::Mat img);
 std::vector<cv::Point> SideSort(std::vector<cv::Point> vP);
 std::vector<cv::Point> SideModify(std::vector<cv::Point> vP);
 class CBPoints
