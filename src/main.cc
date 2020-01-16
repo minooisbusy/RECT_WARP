@@ -33,7 +33,6 @@ int main(int argc, char* argv[])
     char key=0;
 
     // 3. Collect Points
-    std::vector<cv::Point2f> kpts1 = 
     // 4. Sort Points
     // 5. Warp image
     // 6. Fusion image
@@ -59,8 +58,9 @@ int main(int argc, char* argv[])
         cv::circle(img_draw, ps.vP[i], 1, cv::Scalar(0,255,0),-1);
     // Sort the vectors to { LT, LB, RT, RB }
     vP1=RECT_WARP::SideSort(vP1);
-    vP2=RECT_WARP::SideModify(vP1);
 
+    //TODO: Makes Image Size points!!!!
+    vP2=RECT_WARP::SideModify(vP1);
     // Show arrow for correction
     std::vector<cv::Point>::iterator iter = vP2.begin();
     unsigned int idx=0;
@@ -81,12 +81,15 @@ int main(int argc, char* argv[])
     std::cout<<"----------------------------"<<std::endl;
     cv::Mat H = cv::getPerspectiveTransform(kpts1, kpts2);
     cv::Mat img_result;
+    //TODO: sz must follow container stadard ratio
     cv::warpPerspective(img_g, img_result, H,sz);
     cv::cvtColor(img_result,img_result,cv::COLOR_GRAY2BGR);
     for(int i=0; i<4; i++)
     {
         cv::circle(img_result, vP2[i],1,cv::Scalar(0,0,255),-1);
     }
+
+    // Crop Region?
     cv::imshow("Result", img_result);
     std::cout<<sz<<std::endl;
     cv::waitKey(0);

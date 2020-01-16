@@ -24,6 +24,5 @@ class CBPoints
         CBPoints();
         CBPoints(int _n);
 };
-
 }
 #endif
