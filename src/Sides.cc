@@ -75,7 +75,7 @@ void Frame::SideSort()
         sign_y[i] = y_res<0 ? false : true;
         sign_x[i] = x_res<0 ? false : true;
         std::cout<<"Original Point["<<i<<"]="<<m_vP[i]<<std::endl;
-        if( sign_x[i] == false)
+        if( sign_x[i] == true)
         {
             cand_left.push_back(m_vP[i]);
         }
@@ -89,13 +89,13 @@ void Frame::SideSort()
     std::cout<<"left cand side:  "<<cand_left.size()<<std::endl;
         if(cand_right[0].y > cand_right[1].y)
         {
-            res[1] = cand_right[0];
-            res[2] = cand_right[1];
+            res[1] = cand_right[1];
+            res[2] = cand_right[0];
         }
         else
         {
-            res[1] = cand_right[1];
-            res[2] = cand_right[0];
+            res[1] = cand_right[0];
+            res[2] = cand_right[1];
         }
         
         if(cand_left[0].y > cand_left[1].y)

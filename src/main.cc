@@ -62,19 +62,16 @@ int main(int argc, char* argv[])
     // Sort the vectors to { LT, LB, RT, RB }
     frm[0].SideSort();
     std::cout<<"Original Point Sorted:\n"<<frm[0].m_vP<<std::endl;
-
-    //TODO: Makes Image Size points!!!!
     frm[0].SideModify();
 
     
     // Show arrow for correction
-    std::vector<cv::Point>::iterator iter = frm[0].m_vP.begin();
     unsigned int idx=0;
     std::cout<<"Modified point:\n"<<frm[0].m_vP_mod<<std::endl;
-    for(iter=frm[0].m_vP.begin(); iter!=frm[0].m_vP.end();++iter)
+    for(int i=0; i<frm[0].m_vP.size();i++)
     {
-        cv::arrowedLine(frm[0].m_im_rgb, frm[0].m_vP[idx], *iter, cv::Scalar(255,255,0));
-        cv::circle(frm[0].m_im_rgb, *iter, 1, cv::Scalar(0,0,255),-1);
+        cv::arrowedLine(frm[0].m_im_rgb, frm[0].m_vP[i],frm[0].m_vP_mod[i],cv::Scalar(255,255,0));
+        cv::circle(frm[0].m_im_rgb, frm[0].m_vP[i], 1, cv::Scalar(0,0,255),-1);
         idx++;
     }
     std::cout<<"Point position show!"<<std::endl;
