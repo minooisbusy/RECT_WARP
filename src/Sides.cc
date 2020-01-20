@@ -65,7 +65,7 @@ void Frame::SideSort()
     
     double y_res, x_res;
     // Clock-wise: LT RT RB LB
-    std::vector<cv::Point> res(MAX_POINTS);
+    std::vector<cv::Point> res(MAX_POINTS), cand_left, cand_right;
     
     for(int i=0; i<MAX_POINTS; i++)
     {
@@ -75,29 +75,40 @@ void Frame::SideSort()
         sign_y[i] = y_res<0 ? false : true;
         sign_x[i] = x_res<0 ? false : true;
         std::cout<<"Original Point["<<i<<"]="<<m_vP[i]<<std::endl;
-        if( sign_x[i] == false && sign_y[i] == false)
+        if( sign_x[i] == false)
         {
-            res[2] = m_vP[i];
-            std::cout<<"res[2]="<<res[2]<<std::endl;
+            cand_left.push_back(m_vP[i]);
         }
-        else if( sign_x[i] == true && sign_y[i] == false)
+        else
         {
-            res[3] = m_vP[i];
-            std::cout<<"res[3]="<<res[3]<<std::endl;
-        }
-        else if( sign_x[i] == false && sign_y[i] == true)
-        {
-            res[1] = m_vP[i];
-            std::cout<<"res[1]="<<res[1]<<std::endl;
-
-        }
-        else 
-        {
-            res[0] = m_vP[i];
-            std::cout<<"res[0]="<<res[0]<<std::endl;
-
+            cand_right.push_back(m_vP[i]);
         }
     }
+    std::cout<<"candidate specify ON!"<<std::endl;
+    std::cout<<"right cand size: "<<cand_right.size()<<std::endl;
+    std::cout<<"left cand side:  "<<cand_left.size()<<std::endl;
+        if(cand_right[0].y > cand_right[1].y)
+        {
+            res[1] = cand_right[0];
+            res[2] = cand_right[1];
+        }
+        else
+        {
+            res[1] = cand_right[1];
+            res[2] = cand_right[0];
+        }
+        
+        if(cand_left[0].y > cand_left[1].y)
+        {
+            res[0] = cand_left[1];
+            res[3] = cand_left[0];
+        }
+        else
+        {
+            res[0] = cand_left[0];
+            res[3] = cand_left[1];
+        }
+
     m_vP = std::vector<cv::Point>(res.begin(), res.end());
 }
 

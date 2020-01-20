@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
         cv::circle(frm[0].m_im_g, frm[0].m_vP[i], 1, cv::Scalar(0,255,0),-1);
     // Sort the vectors to { LT, LB, RT, RB }
     frm[0].SideSort();
-    std::cout<<"Original Point:\n"<<frm[0].m_vP<<std::endl;
+    std::cout<<"Original Point Sorted:\n"<<frm[0].m_vP<<std::endl;
 
     //TODO: Makes Image Size points!!!!
     frm[0].SideModify();
