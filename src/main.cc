@@ -1,7 +1,7 @@
 #include "Sides.h"
 #include <opencv2/highgui.hpp>
 #define RESIZE_FACTOR 4
-
+//TODO: Per picture processing must be refactorized
 void print(char* prm)
 {
     std::cout<<prm<<std::endl;
@@ -85,7 +85,6 @@ int main(int argc, char* argv[])
     std::cout<<"----------------------------"<<std::endl;
     cv::Mat H = cv::getPerspectiveTransform(kpts1, kpts2);
     cv::Mat img_result;
-    //TODO: sz must follow container stadard ratio
     cv::Size sz = cv::Size(frm[0].m_vP_mod[2].x, frm[0].m_vP_mod[2].y);
     
     cv::warpPerspective(frm[0].m_im_g, img_result, H,sz);
