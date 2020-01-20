@@ -6,16 +6,29 @@ namespace RECT_WARP
 {
 void CallBackProc(int event, int x, int y, int flags, void *point)
 {
-    CBPoints *p = (CBPoints*)point;
+    Frame *p = (Frame*)point;
     
-    if(event == cv::EVENT_LBUTTONDOWN&&p->n_limit_iter<p->n_max_points)
+    if(event == cv::EVENT_LBUTTONDOWN&&p->m_limit_iter<p->m_max_points)
     {
-        p->vP[p->n_limit_iter].x = x;
-        p->vP[p->n_limit_iter].y = y;
-        p->n_limit_iter++;
+        p->m_vP[p->m_limit_iter].x = x;
+        p->m_vP[p->m_limit_iter].y = y;
+        p->m_limit_iter++;
     }
 }
-std::vector<cv::Point> SideSort(std::vector<cv::Point> vP)
+Frame::Frame(){}
+Frame::Frame(char* filename, char* factor_resize)
+{
+    m_im = cv::imread(filename, 0);
+    cv::cvtColor(m_im,m_im_g, cv::COLOR_RGB2GRAY);
+    m_max_points = 4;
+    m_factor_resize = atoi(factor_resize);
+    m_limit_iter = 0;
+}
+unsigned char* Frame::validation()
+{
+    return m_im.data;
+}
+std::vector<cv::Point> Frame::SideSort(std::vector<cv::Point> vP)
 {
     bool sign_y[MAX_POINTS] = {false};
     bool sign_x[MAX_POINTS] = {false};
@@ -61,14 +74,8 @@ std::vector<cv::Point> SideSort(std::vector<cv::Point> vP)
         return res;       
 }
 
-std::vector<cv::Point> SideModify(std::vector<cv::Point> vP)
+std::vector<cv::Point> Frame::SideModify(std::vector<cv::Point> vP)
 {
-    double arrX[MAX_POINTS] = {vP[0].x, vP[1].x, vP[2].x, vP[3].x};
-    double arrY[MAX_POINTS] = {vP[0].y, vP[1].y, vP[2].y, vP[3].y};
-
-    const auto [minX, maxX] = std::minmax_element(&arrX[0], &arrX[4]);
-    const auto [minY, maxY] = std::minmax_element(&arrY[0], &arrY[4]);
-    
     // Images are caputred at left or right side.
     // we can modify width with real container size ratio
     // Compute Left-side width
@@ -94,15 +101,10 @@ std::vector<cv::Point> SideModify(std::vector<cv::Point> vP)
     res.push_back(cv::Point(width, 0));
     res.push_back(cv::Point(width, height));
     res.push_back(cv::Point(0, height));
-//    cv::Point tmp(*minX,*minY);
-//    res.push_back(tmp); // Left-Top
-//    res.push_back(cv::Point_(*maxX, *minY)); // Right-Top
-//    res.push_back(cv::Point_(*maxX, *maxY)); // Left-Bottom
-//    res.push_back(cv::Point_(*minX, *maxY)); // Right-Bottom
 
     return res;
 }
-std::vector<cv::Point> PointZoomOut(std::vector<cv::Point> vP, double sz)
+std::vector<cv::Point> Frame::PointZoomOut(std::vector<cv::Point> vP, double sz)
 {
     std::cout<<"PointZoomOut start"<<std::endl;
     std::vector<cv::Point> res;
@@ -114,12 +116,5 @@ std::vector<cv::Point> PointZoomOut(std::vector<cv::Point> vP, double sz)
         res.push_back(cv::Point(iter->x*sz, iter->y*sz));
     }
     return res;
-}
-CBPoints::CBPoints(int _n)
-{
-    n_max_points = _n;
-    n_limit_iter = 0;
-    for(int i=0; i<n_max_points;i++)
-        vP.push_back(cv::Point(0,0));
 }
 }

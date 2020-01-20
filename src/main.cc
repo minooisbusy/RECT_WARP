@@ -17,30 +17,26 @@ int main(int argc, char* argv[])
     }
 
     // 1. Image load
-    cv::Mat img = cv::imread(argv[1]);
-    cv::Mat img_g, img_draw;
-     if(!img.data)
+    RECT_WARP::Frame frm[2];
+    frm[0] = RECT_WARP::Frame(argv[1],argv[3]);
+    frm[1] = RECT_WARP::Frame(argv[2],argv[3]);
+
+    for(int i=0; i<2;i++)
     {
+       if(!frm[i].validation())
+        {
         std::cout<<"Image data is Not loaded"<<std::endl;
         return 0;
+        }
     }
-    cv::cvtColor(img, img_g, cv::COLOR_RGB2GRAY);
-    cv::Size sz(img_g.cols, img_g.rows);
-    sz=sz/RESIZE_FACTOR;
-    cv::resize(img_g,img_g,sz);
-    cv::imshow("test Show", img_g);
-    cv::cvtColor(img_g, img_draw, cv::COLOR_GRAY2BGR);
-
-    // 2. Rectangle Choose Variables Init
-    int max_point = atoi(argv[2]);
-    RECT_WARP::CBPoints ps(max_point);
+    
     char key=0;
 
     // 3. Collect Points
     // 4. Sort Points
     // 5. Warp image
     // 6. Fusion image
-    cv::setMouseCallback("test Show", RECT_WARP::CallBackProc, &ps);
+    cv::setMouseCallback("test Show", RECT_WARP::CallBackProc, &frm->);
     while(1)
     {
         for(int i=0; i<max_point;i++)
