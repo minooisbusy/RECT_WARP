@@ -11,10 +11,13 @@
 namespace RECT_WARP
 {
 #define MAX_POINTS 4
+#define CONTAINER_20ft_RATIO 2.3255813953488373
 void CallBackProc(int event, int x, int y, int flags, void * point);
 std::vector<cv::Point> CollectPoints(cv::Mat img);
 std::vector<cv::Point> SideSort(std::vector<cv::Point> vP);
 std::vector<cv::Point> SideModify(std::vector<cv::Point> vP);
+std::vector<cv::Point> PointZoomOut(std::vector<cv::Point> vP, double sz);
+std::vector<cv::Point> PointZoomIn(std::vector<cv::Point> vP, double sz);
 class CBPoints
 {
     public:

@@ -1,6 +1,10 @@
 #include "Sides.h"
+#define RESIZE_FACTOR 4
 
-
+void print(char* prm)
+{
+    std::cout<<prm<<std::endl;
+}
 int main(int argc, char* argv[])
 {
     // 0. Argment Parsing
@@ -22,7 +26,7 @@ int main(int argc, char* argv[])
     }
     cv::cvtColor(img, img_g, cv::COLOR_RGB2GRAY);
     cv::Size sz(img_g.cols, img_g.rows);
-    sz=sz/4;
+    sz=sz/RESIZE_FACTOR;
     cv::resize(img_g,img_g,sz);
     cv::imshow("test Show", img_g);
     cv::cvtColor(img_g, img_draw, cv::COLOR_GRAY2BGR);
@@ -50,17 +54,24 @@ int main(int argc, char* argv[])
     // 4. Side specification
     // Allocate Personal Point class to OpenCV Point class.
     std::vector<cv::Point> vP1(ps.vP.begin(), ps.vP.end());
-    std::vector<cv::Point> vP2;
+
+    std::vector<cv::Point> vP1_resz = RECT_WARP::PointZoomOut(vP1, RESIZE_FACTOR);
+
+    std::vector<cv::Point> vP2, vP2_resz;
     for(unsigned int i=0; i<vP1.size(); i++)
         std::cout<<vP1[i]<<std::endl;
     // Find Top-Left, Top-Right, Bottom-Left, Bottom-Right
     for(int i=0; i<max_point;i++)
         cv::circle(img_draw, ps.vP[i], 1, cv::Scalar(0,255,0),-1);
     // Sort the vectors to { LT, LB, RT, RB }
-    vP1=RECT_WARP::SideSort(vP1);
+    vP1 = RECT_WARP::SideSort(vP1);
+    vP1_resz=RECT_WARP::SideSort(vP1_resz);
 
     //TODO: Makes Image Size points!!!!
     vP2=RECT_WARP::SideModify(vP1);
+
+    vP2_resz = RECT_WARP::PointZoomOut(vP2, RESIZE_FACTOR);
+    
     // Show arrow for correction
     std::vector<cv::Point>::iterator iter = vP2.begin();
     unsigned int idx=0;
@@ -82,12 +93,16 @@ int main(int argc, char* argv[])
     cv::Mat H = cv::getPerspectiveTransform(kpts1, kpts2);
     cv::Mat img_result;
     //TODO: sz must follow container stadard ratio
+    sz = cv::Size(vP2[2].x, vP2[2].y);
+    
     cv::warpPerspective(img_g, img_result, H,sz);
+    std::cout<<H<<std::endl;
+    std::cout<<sz<<std::endl;
     cv::cvtColor(img_result,img_result,cv::COLOR_GRAY2BGR);
-    for(int i=0; i<4; i++)
-    {
-        cv::circle(img_result, vP2[i],1,cv::Scalar(0,0,255),-1);
-    }
+//    for(int i=0; i<4; i++)
+//   {
+//        cv::circle(img_result, vP2[i],1,cv::Scalar(0,0,255),-1);
+//    }
 
     // Crop Region?
     cv::imshow("Result", img_result);

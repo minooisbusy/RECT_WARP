@@ -63,20 +63,56 @@ std::vector<cv::Point> SideSort(std::vector<cv::Point> vP)
 
 std::vector<cv::Point> SideModify(std::vector<cv::Point> vP)
 {
-    float arrX[MAX_POINTS] = {vP[0].x, vP[1].x, vP[2].x, vP[3].x};
-    float arrY[MAX_POINTS] = {vP[0].y, vP[1].y, vP[2].y, vP[3].y};
+    double arrX[MAX_POINTS] = {vP[0].x, vP[1].x, vP[2].x, vP[3].x};
+    double arrY[MAX_POINTS] = {vP[0].y, vP[1].y, vP[2].y, vP[3].y};
 
     const auto [minX, maxX] = std::minmax_element(&arrX[0], &arrX[4]);
     const auto [minY, maxY] = std::minmax_element(&arrY[0], &arrY[4]);
     
+    // Images are caputred at left or right side.
+    // we can modify width with real container size ratio
+    // Compute Left-side width
+    double left_height = cv::abs( vP[0].y - vP[3].y );
+    double right_height = cv::abs( vP[1].y - vP[2].y );
+    double width(0.0);
+    double height(0.0);
+    if(left_height > right_height)
+    {
+        height = left_height;
+        width = CONTAINER_20ft_RATIO*left_height;
+    }
+    else 
+    {
+        height = right_height;
+        width = CONTAINER_20ft_RATIO*right_height;
+    }
+    // Compute Right-Side width
+    
     
     std::vector<cv::Point> res;
-    cv::Point tmp(*minX,*minY);
-    res.push_back(tmp); // Left-Top
-    res.push_back(cv::Point_(*maxX, *minY)); // Right-Top
-    res.push_back(cv::Point_(*maxX, *maxY)); // Left-Bottom
-    res.push_back(cv::Point_(*minX, *maxY)); // Right-Bottom
+    res.push_back(cv::Point(0,0));
+    res.push_back(cv::Point(width, 0));
+    res.push_back(cv::Point(width, height));
+    res.push_back(cv::Point(0, height));
+//    cv::Point tmp(*minX,*minY);
+//    res.push_back(tmp); // Left-Top
+//    res.push_back(cv::Point_(*maxX, *minY)); // Right-Top
+//    res.push_back(cv::Point_(*maxX, *maxY)); // Left-Bottom
+//    res.push_back(cv::Point_(*minX, *maxY)); // Right-Bottom
 
+    return res;
+}
+std::vector<cv::Point> PointZoomOut(std::vector<cv::Point> vP, double sz)
+{
+    std::cout<<"PointZoomOut start"<<std::endl;
+    std::vector<cv::Point> res;
+    
+    std::vector<cv::Point>::iterator iter;
+     
+    for(iter = vP.begin(); iter!=vP.end(); ++iter)
+    {
+        res.push_back(cv::Point(iter->x*sz, iter->y*sz));
+    }
     return res;
 }
 CBPoints::CBPoints(int _n)
