@@ -1,4 +1,5 @@
 #include "Sides.h"
+#include "Fusion.h"
 #include <opencv2/highgui.hpp>
 #define RESIZE_FACTOR 4
 //TODO: Per picture processing must be refactorized
@@ -27,11 +28,17 @@ int main(int argc, char* argv[])
         return 0;
         }
     }
-    frm[0].warpProcess();
-    char key=0;
-    print("test Show plot");
-    cv::imshow("test Show", frm[0].m_im_rgb);
+    cv::Mat res_left = frm[0].warpProcess();
+    cv::Mat res_right =  frm[1].warpProcess();
     
+    RECT_WARP::Fusion fus(frm[0].m_im,frm[1].m_im, frm[0].m_vP_zoomOut, frm[1].m_vP_zoomOut);
+
+    cv::Mat result = fus.fusionProcess();   
+    cv::imwrite("../..result/result3.jpg",result);
+    //cv::imwrite("left_result.jpg", res_left);
+    //cv::imwrite("right_result.jpg", res_right);
+
+    //RECT_WARP::Fusion();
     // 4. Sort Points
     // 5. Warp image
     // 6. Fusion image

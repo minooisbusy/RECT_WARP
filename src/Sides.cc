@@ -94,14 +94,19 @@ void Frame::SideSort()
 
     m_vP = std::vector<cv::Point>(res.begin(), res.end());
 }
-
+double norm(cv::Point p, cv::Point q)
+{
+    return cv::sqrt(cv::pow((p.x-q.x),2)+cv::pow(p.y-q.y,2));
+}
 void Frame::SideModify()
 {
     // Images are caputred at left or right side.
     // we can modify width with real container size ratio
     // Compute Left-side width
-    double left_height = cv::abs( m_vP[0].y - m_vP[3].y );
-    double right_height = cv::abs( m_vP[1].y - m_vP[2].y );
+    double left_height;// = cv::abs( m_vP[0].y - m_vP[3].y );
+    left_height = norm(m_vP[0],m_vP[3]);
+    double right_height;// = cv::abs( m_vP[1].y - m_vP[2].y );
+    right_height = norm(m_vP[1],m_vP[2]);
     double width(0.0);
     double height(0.0);
     if(left_height > right_height)
@@ -152,7 +157,7 @@ void CBProc(int event, int x, int y, int flags, void *pointer)
     }
 }
 
-std::vector<cv::Point> Frame::warpProcess()
+cv::Mat Frame::warpProcess()
 {
     char winName[] = "Temporary: Select image points";
     char key = 0;
@@ -209,6 +214,6 @@ std::vector<cv::Point> Frame::warpProcess()
     cv::waitKey(0);
     
 
-    return result;
+    return res;
 }
 }

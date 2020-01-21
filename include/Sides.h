@@ -37,7 +37,7 @@ class Frame
         void SideModify();
         void PointZoomOut();
         std::vector<cv::Point> PointZoomIn(std::vector<cv::Point> vP, double sz);
-        std::vector<cv::Point> warpProcess();
+        cv::Mat warpProcess();
 };
 }
 #endif
