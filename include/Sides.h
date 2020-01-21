@@ -30,12 +30,12 @@ class Frame
         Frame();
         Frame(char* filename, char* factor_resize);
         unsigned char* validation();
-        void imshow(char *filename); 
         std::vector<cv::Point> CollectPoints(cv::Mat img);
         void SideSort();
         void SideModify();
         std::vector<cv::Point> PointZoomOut(std::vector<cv::Point> vP, double sz);
         std::vector<cv::Point> PointZoomIn(std::vector<cv::Point> vP, double sz);
+        std::vector<cv::Point> warpProcess();
 };
 }
 #endif

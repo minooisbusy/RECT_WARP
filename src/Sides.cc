@@ -6,18 +6,6 @@
 
 namespace RECT_WARP
 {
-void CallBackProc(int event, int x, int y, int flags, void *Frm)
-{
-    Frame *p = (Frame*)Frm;
-    
-    if(event == cv::EVENT_LBUTTONDOWN&&p->m_limit_iter<p->m_max_points)
-    {
-        std::cout<<"Call back HIT!!"<<std::endl;
-        p->m_vP[p->m_limit_iter].x = x;
-        p->m_vP[p->m_limit_iter].y = y;
-        p->m_limit_iter++;
-    }
-}
 
 Frame::Frame(){}
 
@@ -43,11 +31,6 @@ unsigned char* Frame::validation()
     return m_im.data;
 }
 
-void Frame::imshow(char* filename)
-{
-  // cv::imshow(filename, m_im_g);
-    
-}
 
 void Frame::SideSort()
 {
@@ -153,5 +136,74 @@ std::vector<cv::Point> Frame::PointZoomOut(std::vector<cv::Point> vP, double sz)
         res.push_back(cv::Point(iter->x*sz, iter->y*sz));
     }
     return res;
+}
+
+void CBProc(int event, int x, int y, int flags, void *pointer)
+{
+     RECT_WARP::Frame*p = (RECT_WARP::Frame*)pointer;
+    if(event == cv::EVENT_LBUTTONDOWN && p->m_limit_iter < p->m_max_points)
+    {
+
+        std::cout<<"Call back HIT!!"<<std::endl;
+        p->m_vP[p->m_limit_iter].x = x;
+        p->m_vP[p->m_limit_iter].y = y;
+        p->m_limit_iter++;
+    }
+}
+
+std::vector<cv::Point> Frame::warpProcess()
+{
+    char winName[] = "Temporary: Select image points";
+    char key = 0;
+    std::vector<cv::Point> result(4);
+    std::cout<<winName<<std::endl;
+    cv::imshow(winName,m_im_g);
+    cv::setMouseCallback(winName, CBProc, this);
+
+    std::cout<<"Mouse Callback is registed"<<std::endl;
+    while(true)
+    {
+        for(int i=0; i<m_limit_iter;i++)
+            cv::circle(m_im_rgb, m_vP[i], 1, cv::Scalar(0, 255, 0), -1);
+        cv::imshow(winName, m_im_rgb);
+        key = cv::waitKeyEx(30);
+        if( key == 'q' || m_limit_iter >= 4)
+        {
+            std::cout<<" Call-back routine end!"<<std::endl;
+            break;
+        }
+    }
+
+    for(int i=0; i<m_limit_iter;i++)
+        cv::circle(m_im_rgb, m_vP[i], 1, cv::Scalar(0, 255, 0), -1);
+    cv::imshow(winName, m_im_rgb); 
+    cv::waitKey(10);
+    
+    SideSort();
+    SideModify();
+
+    // Show Arrowline
+    for(int i=0; i<m_vP.size(); i++)
+    {
+        cv::arrowedLine(m_im_rgb, m_vP[i], m_vP_mod[i], cv::Scalar(255,255,0));
+        cv::circle(m_im_rgb,m_vP[i], 1, cv::Scalar(0,0,255), -1);
+    }
+
+    cv::imshow(winName, m_im_rgb);
+    cv::waitKey(0);
+    
+    const cv::Point2f kpts1[4] = {m_vP[0], m_vP[1], m_vP[2], m_vP[3]};
+    const cv::Point2f kpts2[4] = {m_vP_mod[0], m_vP_mod[1], m_vP_mod[2], m_vP_mod[3]};
+
+    cv::Mat H = cv::getPerspectiveTransform(kpts1, kpts2);
+    cv::Mat res;
+    cv::Size sz = cv::Size(m_vP_mod[2].x, m_vP_mod[2].y);
+
+    cv::warpPerspective(m_im_rgb, res, H, sz);
+    cv::imshow("Result", res);
+    cv::waitKey(0);
+    
+
+    return result;
 }
 }

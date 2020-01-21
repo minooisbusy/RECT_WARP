@@ -1,3 +1,0 @@
-/home/paimon03d0/RECT_WARP/test/build/CMakeFiles/edit_cache.dir
-/home/paimon03d0/RECT_WARP/test/build/CMakeFiles/homography.dir
-/home/paimon03d0/RECT_WARP/test/build/CMakeFiles/rebuild_cache.dir
