@@ -22,6 +22,8 @@ class Frame
     public:
         std::vector<cv::Point> m_vP;
         std::vector<cv::Point> m_vP_mod;
+        std::vector<cv::Point> m_vP_zoomOut;
+        std::vector<cv::Point> m_vP_mod_zoomOut;
         //Callback Points Class
         int m_limit_iter;
         unsigned int m_max_points;
@@ -33,7 +35,7 @@ class Frame
         std::vector<cv::Point> CollectPoints(cv::Mat img);
         void SideSort();
         void SideModify();
-        std::vector<cv::Point> PointZoomOut(std::vector<cv::Point> vP, double sz);
+        void PointZoomOut();
         std::vector<cv::Point> PointZoomIn(std::vector<cv::Point> vP, double sz);
         std::vector<cv::Point> warpProcess();
 };

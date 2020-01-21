@@ -124,18 +124,19 @@ void Frame::SideModify()
     
 
 }
-std::vector<cv::Point> Frame::PointZoomOut(std::vector<cv::Point> vP, double sz)
+void Frame::PointZoomOut()
 {
     std::cout<<"PointZoomOut start"<<std::endl;
-    std::vector<cv::Point> res;
-    
-    std::vector<cv::Point>::iterator iter;
-     
-    for(iter = vP.begin(); iter!=vP.end(); ++iter)
+    if(!m_vP_zoomOut.empty() || !m_vP_mod_zoomOut.empty())
     {
-        res.push_back(cv::Point(iter->x*sz, iter->y*sz));
+        m_vP_zoomOut = std::vector<cv::Point>();
+        m_vP_mod_zoomOut = std::vector<cv::Point>();
     }
-    return res;
+    for(unsigned int i=0; i<m_factor_resize; i++)
+    {
+        m_vP_zoomOut.push_back(m_vP[i] * m_factor_resize);
+        m_vP_mod_zoomOut.push_back(m_vP_mod[i] * m_factor_resize);
+    }
 }
 
 void CBProc(int event, int x, int y, int flags, void *pointer)
@@ -191,15 +192,19 @@ std::vector<cv::Point> Frame::warpProcess()
 
     cv::imshow(winName, m_im_rgb);
     cv::waitKey(0);
-    
-    const cv::Point2f kpts1[4] = {m_vP[0], m_vP[1], m_vP[2], m_vP[3]};
-    const cv::Point2f kpts2[4] = {m_vP_mod[0], m_vP_mod[1], m_vP_mod[2], m_vP_mod[3]};
+    // Original image processing
+    PointZoomOut();
+
+    const cv::Point2f kpts1[4] = {m_vP_zoomOut[0], m_vP_zoomOut[1], m_vP_zoomOut[2], m_vP_zoomOut[3]};
+    const cv::Point2f kpts2[4] = {m_vP_mod_zoomOut[0], m_vP_mod_zoomOut[1], m_vP_mod_zoomOut[2], m_vP_mod_zoomOut[3]};
 
     cv::Mat H = cv::getPerspectiveTransform(kpts1, kpts2);
     cv::Mat res;
-    cv::Size sz = cv::Size(m_vP_mod[2].x, m_vP_mod[2].y);
+    cv::Size sz = cv::Size(m_vP_mod_zoomOut[2].x, m_vP_mod_zoomOut[2].y);
 
-    cv::warpPerspective(m_im_rgb, res, H, sz);
+    cv::warpPerspective(m_im, res, H,sz );
+    sz = cv::Size(m_vP_mod[2].x,m_vP_mod[2].y);
+    cv::resize(res, res, sz);
     cv::imshow("Result", res);
     cv::waitKey(0);
     
